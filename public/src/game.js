@@ -14,7 +14,7 @@ require(objectFiles, function () {
   Q.scene('arena', function (stage) {
     stage.collisionLayer(new Q.TileLayer({ dataAsset: '/maps/arena.json', sheet: 'tiles' }));
  
-    var player = stage.insert(new Q.Player({ x: 100, y: 100 }));
+    var player = stage.insert(new Q.Player({ x: 50, y: 100 }));
     stage.add('viewport').follow(player);
   });
  
