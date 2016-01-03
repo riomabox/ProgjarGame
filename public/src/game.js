@@ -11,6 +11,7 @@ require(['socket.io/socket.io.js']);
 var players = [];
 var socket = io.connect('http://localhost:8080');
 var UiPlayers = document.getElementById("players");
+var UiCounter = document.getElementById("timers");
 var selfId, player;
  
 var objectFiles = [
@@ -21,6 +22,9 @@ require(objectFiles, function () {
 	function setUp (stage) {
 		socket.on('count', function (data) {
 			UiPlayers.innerHTML = 'Players: ' + data['playerCount'];
+		});
+		socket.on('timer', function (data) {
+			UiCounter.innerHTML = 'Time: ' + data['playerCount'];
 		});
 		socket.on('connected', function (data) {
 			selfId = data['playerId'];
