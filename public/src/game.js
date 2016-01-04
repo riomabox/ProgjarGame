@@ -26,7 +26,12 @@ require(objectFiles, function () {
 		socket.on('timer', function (data) {
 			UiCounter.innerHTML = 'Time: ' + data['playerCount'];
 			if (data['playerCount'] <= 0){
-				
+				var x;
+				if (confirm("Apakah kamu mau mengulangi game!") == true) {
+					window.location = "http://localhost:8080";
+				} else {
+					x = "You pressed Cancel!";
+				}
 			}
 		});
 		socket.on('connected', function (data) {
