@@ -9,8 +9,9 @@ Q.gravityY = 0;
 require(['socket.io/socket.io.js']);
 
 var players = [];
-var socket = io.connect('http://192.168.1.8:8080');
+var socket = io.connect('http://192.168.1.3:8080');
 var UiPlayers = document.getElementById("players");
+var UiCounter = document.getElementById("timers");
 var selfId, player;
  
 var objectFiles = [
@@ -21,6 +22,19 @@ require(objectFiles, function () {
 	function setUp (stage) {
 		socket.on('count', function (data) {
 			UiPlayers.innerHTML = 'Players: ' + data['playerCount'];
+		});
+		socket.on('timer', function (data) {
+			UiCounter.innerHTML = 'Time: ' + data['counter'];
+			if (data['counter'] <= 0){
+				socket.on('end', function (data) {
+					if(data['tagged']){
+						alert('anda kalah');
+					}
+					else{
+						alert('anda menang');
+					}
+				});
+			}
 		});
 		socket.on('connected', function (data) {
 			selfId = data['playerId'];

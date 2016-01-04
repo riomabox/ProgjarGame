@@ -11,12 +11,14 @@ app.get('/', function(req, res){
  
 var playerCount = 0;
 var id = 0;
-var counter =10;
+var counter =15;
 var tagged = false;
+var flag = 0;
  
 io.on('connection', function (socket) {
 	playerCount++;
 	id++;
+	//console.log(id);
 	setTimeout(function () {
 		if (!tagged) {
 		  socket.emit('connected', { playerId: id, tagged: true });
@@ -25,6 +27,21 @@ io.on('connection', function (socket) {
 		}
 		io.emit('count', { playerCount: playerCount });
 	}, 1500);
+	if(flag == 0){
+		var proses = setInterval(function() {
+			if(counter >= 1){
+				counter--;
+				io.emit('timer', {counter});
+				//io.emit('end', data);
+			}
+			else{
+				counter = 15;
+				clearInterval(proses);
+			}
+		}, 1000);
+		flag = 1;
+	}
+	
 	
 	socket.on('disconnect', function () {
 		playerCount--;
@@ -36,10 +53,12 @@ io.on('connection', function (socket) {
 			tagged = true;
 		}
 		socket.broadcast.emit('updated', data);
+		io.emit('end', data);
 	});
 	
 	socket.on('tag', function (data) {
 		io.emit('tagged', data);
+		
 	});
 });
 
@@ -49,5 +68,3 @@ setInterval(function () {
  
 server.listen(8080);
 console.log("Multiplayer app listening on port 8080");
-
-
