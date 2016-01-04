@@ -16,13 +16,14 @@ var counter =100;
 io.on('connection', function (socket) {
 	playerCount++;
 	id++;
-	setInterval(function() {
-		counter--;
-		io.emit('timer', { playerCount: counter});
-	}, 1000);
+
 	setTimeout(function () {
 		socket.emit('connected', { playerId: id });
 		io.emit('count', { playerCount: playerCount });
+		setInterval(function() {
+			counter--;
+			io.emit('timer', { playerCount: counter});
+		}, 1000);
 	}, 1500);
 	
 	socket.on('disconnect', function () {
