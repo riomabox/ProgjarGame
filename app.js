@@ -12,23 +12,18 @@ app.get('/', function(req, res){
 var playerCount = 0;
 var id = 0;
 var counter =10;
+var tagged = false;
  
 io.on('connection', function (socket) {
 	playerCount++;
 	id++;
 	setTimeout(function () {
-		socket.emit('connected', { playerId: id });
+		if (!tagged) {
+		  socket.emit('connected', { playerId: id, tagged: true });
+		} else {
+		  socket.emit('connected', { playerId: id });
+		}
 		io.emit('count', { playerCount: playerCount });
-		var proses = setInterval(function() {
-			if(counter >= 1){
-				counter--;
-				io.emit('timer', { playerCount: counter});
-			}
-			else{
-				counter = 10;
-				clearInterval(proses);
-			}
-		}, 1000);
 	}, 1500);
 	
 	socket.on('disconnect', function () {
@@ -37,9 +32,20 @@ io.on('connection', function (socket) {
 	});
 	
 	socket.on('update', function (data) {
+		if (data['tagged']) {
+			tagged = true;
+		}
 		socket.broadcast.emit('updated', data);
 	});
+	
+	socket.on('tag', function (data) {
+		io.emit('tagged', data);
+	});
 });
+
+setInterval(function () {
+	tagged = false;
+}, 3000);
  
 server.listen(8080);
 console.log("Multiplayer app listening on port 8080");

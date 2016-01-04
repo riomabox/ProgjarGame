@@ -9,9 +9,8 @@ Q.gravityY = 0;
 require(['socket.io/socket.io.js']);
 
 var players = [];
-var socket = io.connect('http://localhost:8080');
+var socket = io.connect('http://192.168.1.8:8080');
 var UiPlayers = document.getElementById("players");
-var UiCounter = document.getElementById("timers");
 var selfId, player;
  
 var objectFiles = [
@@ -23,40 +22,56 @@ require(objectFiles, function () {
 		socket.on('count', function (data) {
 			UiPlayers.innerHTML = 'Players: ' + data['playerCount'];
 		});
-		socket.on('timer', function (data) {
-			UiCounter.innerHTML = 'Time: ' + data['playerCount'];
-			if (data['playerCount'] <= 0){
-				if (confirm("Apakah kamu mau mengulangi game!") == true) {
-					window.location = "http://localhost:8080";
-				} else {
-					
-					
-				}
-			}
-		});
 		socket.on('connected', function (data) {
 			selfId = data['playerId'];
-			player = new Q.Player({ playerId: selfId, x: 50, y: 50, socket: socket });
-			stage.insert(player);
+			if (data['tagged']) {
+				player = new Q.Player({ playerId: selfId, x: 50, y: 50, socket: socket });
+				player.p.sheet = 'enemy'
+				player.p.tagged = true;
+				stage.insert(player);
+			} else {
+				player = new Q.Player({ playerId: selfId, x: 50, y: 100, socket: socket });
+				stage.insert(player);
+				player.trigger('join');
+			}
 			stage.add('viewport').follow(player);
 		});
+	
+		socket.on('updated', function (data) {
+			var actor = players.filter(function (obj) {
+				return obj.playerId == data['playerId'];
+			})[0];
+			if (actor) {
+				actor.player.p.x = data['x'];
+				actor.player.p.y = data['y'];
+				actor.player.p.sheet = data['sheet'];
+				actor.player.p.opacity = data['opacity'];
+				actor.player.p.invincible = data['invincible'];
+				actor.player.p.tagged = data['tagged'];
+				actor.player.p.update = true;
+			} else {
+				var temp = new Q.Actor({ playerId: data['playerId'], x: data['x'], y: data['y'], sheet: data['sheet'], opacity: data['opacity'], invincible: data['invincible'], tagged: data['tagged'] });
+				players.push({ player: temp, playerId: data['playerId'] });
+				stage.insert(temp);
+			}
+		});
+		
+		socket.on('tagged', function (data) {
+			if (data['playerId'] == selfId) {
+				player.p.sheet = 'enemy';
+				player.p.tagged = true;
+			} else {
+				var actor = players.filter(function (obj) {
+					return obj.playerId == data['playerId'];
+				})[0];
+				if (actor) {
+					actor.player.p.sheet = 'enemy'
+				}	
+			}
+		});
+	
 	}
 	
-	socket.on('updated', function (data) {
-		var actor = players.filter(function (obj) {
-			return obj.playerId == data['playerId'];
-		})[0];
-		if (actor) {
-			actor.player.p.x = data['x'];
-			actor.player.p.y = data['y'];
-			actor.player.p.sheet = data['sheet'];
-			actor.player.p.update = true;
-		} else {
-			var temp = new Q.Actor({ playerId: data['playerId'], x: data['x'], y: data['y'], sheet: data['sheet'] });
-			players.push({ player: temp, playerId: data['playerId'] });
-			stage.insert(temp);
-		}
-	});
 	Q.scene('arena', function (stage) {
 		stage.collisionLayer(new Q.TileLayer({ dataAsset: '/maps/arena.json', sheet: 'tiles' }));
 		setUp(stage);
