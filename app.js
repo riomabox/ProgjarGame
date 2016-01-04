@@ -16,19 +16,19 @@ var counter =10;
 io.on('connection', function (socket) {
 	playerCount++;
 	id++;
-	var proses = setInterval(function() {
-		if(counter >= 1){
-			counter--;
-			io.emit('timer', { playerCount: counter});
-		}
-		else{
-			counter = 10;
-			clearInterval(proses);
-		}
-	}, 1000);
 	setTimeout(function () {
 		socket.emit('connected', { playerId: id });
 		io.emit('count', { playerCount: playerCount });
+		var proses = setInterval(function() {
+			if(counter >= 1){
+				counter--;
+				io.emit('timer', { playerCount: counter});
+			}
+			else{
+				counter = 10;
+				clearInterval(proses);
+			}
+		}, 1000);
 	}, 1500);
 	
 	socket.on('disconnect', function () {
