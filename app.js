@@ -18,12 +18,7 @@ io.on('connection', function (socket) {
 	id++;
 	setInterval(function() {
 		counter--;
-		if(counter < 0) {
-			
-		} 
-		else {
-			io.emit('timer', { playerCount: counter});
-		}
+		io.emit('timer', { playerCount: counter});
 	}, 1000);
 	setTimeout(function () {
 		socket.emit('connected', { playerId: id });

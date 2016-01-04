@@ -25,6 +25,9 @@ require(objectFiles, function () {
 		});
 		socket.on('timer', function (data) {
 			UiCounter.innerHTML = 'Time: ' + data['playerCount'];
+			if (data['playerCount'] <= 0){
+				
+			}
 		});
 		socket.on('connected', function (data) {
 			selfId = data['playerId'];
