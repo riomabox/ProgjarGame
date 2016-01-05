@@ -9,7 +9,7 @@ Q.gravityY = 0;
 require(['socket.io/socket.io.js']);
 
 var players = [];
-var socket = io.connect('http://192.168.1.8:8080');
+var socket = io.connect('http://192.168.1.3:8080');
 var UiPlayers = document.getElementById("players");
 var UiCounter = document.getElementById("timers");
 var selfId, player;
