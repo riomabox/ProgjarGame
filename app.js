@@ -17,7 +17,7 @@ var tagged = false;
 io.on('connection', function (socket) {
 	playerCount++;
 	id++;
-	//console.log(id);
+	console.log(id);
 	setTimeout(function () {
 		if (!tagged) {
 		  socket.emit('connected', { playerId: id, tagged: true });
@@ -32,7 +32,7 @@ io.on('connection', function (socket) {
 					io.emit('timer', { playerCount: counter});
 				}
 				else{
-					counter = 10;
+					counter = 15;
 					id = 0;
 					clearInterval(proses);
 				}
@@ -51,7 +51,7 @@ io.on('connection', function (socket) {
 			tagged = true;
 		}
 		socket.broadcast.emit('updated', data);
-		io.emit('end', data);
+		socket.broadcast.emit('end', data);
 	});
 	
 	socket.on('tag', function (data) {

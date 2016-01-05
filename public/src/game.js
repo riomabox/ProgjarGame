@@ -26,24 +26,34 @@ require(objectFiles, function () {
 		socket.on('timer', function (data) {
 			UiCounter.innerHTML = 'Time: ' + data['playerCount'];
 			if (data['playerCount'] <= 0){
-				socket.on('end', function (data) {
-					if(selfId == 1){
-						if ( data['tagged'] && confirm("Anda Kalah, Apakah kamu mau mengulangi game!") == true) {
-							window.location = "http://192.168.1.8:8080";
-						} 
-						else if ( !data['tagged'] && confirm("Anda Menang, Apakah kamu mau mengulangi game!") == true) {
-							window.location = "http://192.168.1.8:8080";
+				if(selfId == 1){
+					socket.on('end', function (data) {
+						if ( data['tagged']) {
+							if(confirm("Anda Menang, Apakah kamu mau mengulangi game!") == true) {
+								window.location = "http://192.168.1.3:8080";
+								data['tagged'] = null;
+							}
+						}						
+						else{ 
+							if(confirm("Anda Kalah, Apakah kamu mau mengulangi game!") == true) {
+								window.location = "http://192.168.1.3:8080";
+								data['tagged'] = null;
+							}
 						}
-					}
-					else{
+					});
+				}
+				else{
+					socket.on('end', function (data) {
 						if (data['tagged']) {
-							alert('Anda Kalah, Refresh kembali');
-						}
-						else {
 							alert('Anda Menang, Refresh kembali');
+							data['tagged'] = null;
 						}
-					}
-				});
+						else{
+							alert('Anda Kalah, Refresh kembali');
+							data['tagged'] = null;
+						}
+					});
+				}
 			}
 		});
 		socket.on('connected', function (data) {
