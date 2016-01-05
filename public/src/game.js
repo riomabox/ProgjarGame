@@ -9,7 +9,7 @@ Q.gravityY = 0;
 require(['socket.io/socket.io.js']);
 
 var players = [];
-var socket = io.connect('http://192.168.1.3:8080');
+var socket = io.connect('http://192.168.1.8:8080');
 var UiPlayers = document.getElementById("players");
 var UiCounter = document.getElementById("timers");
 var selfId, player;
@@ -24,14 +24,24 @@ require(objectFiles, function () {
 			UiPlayers.innerHTML = 'Players: ' + data['playerCount'];
 		});
 		socket.on('timer', function (data) {
-			UiCounter.innerHTML = 'Time: ' + data['counter'];
-			if (data['counter'] <= 0){
+			UiCounter.innerHTML = 'Time: ' + data['playerCount'];
+			if (data['playerCount'] <= 0){
 				socket.on('end', function (data) {
-					if(data['tagged']){
-						alert('anda kalah');
+					if(selfId == 1){
+						if ( data['tagged'] && confirm("Anda Kalah, Apakah kamu mau mengulangi game!") == true) {
+							window.location = "http://192.168.1.8:8080";
+						} 
+						else if ( !data['tagged'] && confirm("Anda Menang, Apakah kamu mau mengulangi game!") == true) {
+							window.location = "http://192.168.1.8:8080";
+						}
 					}
 					else{
-						alert('anda menang');
+						if (data['tagged']) {
+							alert('Anda Kalah, Refresh kembali');
+						}
+						else {
+							alert('Anda Menang, Refresh kembali');
+						}
 					}
 				});
 			}

@@ -13,7 +13,6 @@ var playerCount = 0;
 var id = 0;
 var counter =15;
 var tagged = false;
-var flag = 0;
  
 io.on('connection', function (socket) {
 	playerCount++;
@@ -26,21 +25,20 @@ io.on('connection', function (socket) {
 		  socket.emit('connected', { playerId: id });
 		}
 		io.emit('count', { playerCount: playerCount });
+		if(id == 1){
+			var proses = setInterval(function() {
+				if(counter >= 1){
+					counter--;
+					io.emit('timer', { playerCount: counter});
+				}
+				else{
+					counter = 10;
+					id = 0;
+					clearInterval(proses);
+				}
+			}, 1000);
+		}
 	}, 1500);
-	if(flag == 0){
-		var proses = setInterval(function() {
-			if(counter >= 1){
-				counter--;
-				io.emit('timer', {counter});
-				//io.emit('end', data);
-			}
-			else{
-				counter = 15;
-				clearInterval(proses);
-			}
-		}, 1000);
-		flag = 1;
-	}
 	
 	
 	socket.on('disconnect', function () {
